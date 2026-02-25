@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopin | Women</title>
+  <link rel="icon" href="img/icons8-bag-50.png">
+  <link rel="stylesheet" href="Style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body class="page-products">
+
+
+<header>
+
+    <!--top header-->
+    <div class="top-header">
+      <div class="container">
+        <a href="#" class="logo"><img src="img/Shop In (1).png" width="200px"></a>
+
+
+      </div>
+    </div>
+   
+    
+    <div class="bottom_header">
+      <div class="container">
+        <nav class="nav">
+
+
+          <!--nav bar-->
+          <ul class="nav_links">
+            <li class="active"><a href="index.html">Home </a></li>
+
+          </ul>
+        </nav>
+
+    
+</header>
+    
+
+
+<main>
+  <div class="container">
+    <h1>Women Products</h1>
+    <div id="productsContainer" class="products"></div>
+  </div>
+</main>
+
+
+<footer>
+    <div class="container">
+      <div class="big_row">
+        <img class="logo_footer" src="img/Shop In (1).png" alt="">
+        <p>Stylish, elegant, and affordable, clothing for every occasion.</p>
+        <div class="icons_footer">
+          <a href="#"><i class="fa-solid fa-phone"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+  
+      <div class="row">
+        <h4>Service us</h4>
+        <div class="links">
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Contact Us </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Return Policy </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Shipping Info</a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Terms & Condition</a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Privacy Policy </a>
+        </div>
+      </div>
+  
+      <div class="row">
+        <h4>Quick Links</h4>
+        <div class="links">
+          <a href="#"><i class="fa-solid fa-caret-right"></i> New Arrivals </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Best Sellers </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Offers </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Size Guide </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Track Order </a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="bottom_footer">
+      <div class="container">
+        <p>&copy; <span>Shopin.</span> All Rights Reserved.</p>
+        <div class="payment_img">
+          <img src="img/payment_method.png" alt="">
+        </div>
+      </div>
+    </div>
+</footer>
+  
+
+<script>
+  let favourites = JSON.parse(localStorage.getItem('favourites')) || [];
+
+  function updateFavouriteCounter() {
+    const countFavourite = document.querySelector('.count_favourits');
+    if (countFavourite) countFavourite.textContent = favourites.length;
+  }
+
+  function saveFavourites() {
+    localStorage.setItem('favourites', JSON.stringify(favourites));
+  }
+
+  function setupFavoriteButtons() {
+    const favoriteButtons = document.querySelectorAll('.icon_product');
+    favoriteButtons.forEach((btn) => {
+      btn.addEventListener('click', function () {
+        const productCard = this.closest('.product');
+        if (!productCard) return;
+
+        const nameEl = productCard.querySelector('.name_product a') || productCard.querySelector('.name_product');
+        const imgEl = productCard.querySelector('.img_product img');
+        if (!nameEl || !imgEl) return;
+
+        const productName = nameEl.innerText;
+        const productImg = imgEl.getAttribute('src');
+
+        const alreadyExists = favourites.some(fav => fav.name === productName);
+
+        if (alreadyExists) {
+          favourites = favourites.filter(fav => fav.name !== productName);
+          saveFavourites();
+          updateFavouriteCounter();
+
+          btn.classList.remove("active");
+          const icon = btn.querySelector("i");
+          if (icon) {
+            icon.classList.remove("fa-solid");
+            icon.classList.add("fa-regular");
+          }
+
+        } else {
+          favourites.push({ name: productName, img: productImg });
+          saveFavourites();
+          updateFavouriteCounter();
+
+          btn.classList.add("active");
+          const icon = btn.querySelector("i");
+          if (icon) {
+            icon.classList.remove("fa-regular");
+            icon.classList.add("fa-solid");
+          }
+        }
+      });
+    });
+  }
+
+  function setupCartButtons() {
+    const cartButtons = document.querySelectorAll('.btn_add_cart');
+    cartButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        const productCard = btn.closest('.product');
+        if (!productCard) return;
+
+        const nameEl = productCard.querySelector('.name_product a') || productCard.querySelector('.name_product');
+        const imgEl = productCard.querySelector('.img_product img');
+        const priceEl = productCard.querySelector('.price span');
+
+        if (!nameEl || !imgEl || !priceEl) return;
+
+        const name = nameEl.innerText;
+        const img = imgEl.getAttribute('src');
+        const price = parseFloat(priceEl.textContent.replace('$', ''));
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const alreadyInCart = cart.some(item => item.name === name);
+        if (!alreadyInCart) {
+          cart.push({ name, img, price });
+          localStorage.setItem("cart", JSON.stringify(cart));
+          updateCartCount();
+        }
+      });
+    });
+  }
+
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const count = document.querySelector(".item_header");
+    if (count) count.textContent = cart.length;
+  }
+
+  fetch('products_with_multiple_images.json')
+    .then(response => response.json())
+    .then(data => {
+      const container = document.getElementById('productsContainer');
+      container.innerHTML = "";
+
+      data.forEach(product => {
+        if (product.category === "women") {
+          const item = document.createElement('div');
+          item.className = 'product';
+
+          item.innerHTML = `
+            ${product.old_price ? `<span class="sale_present">%${Math.floor((product.old_price - product.price) / product.old_price * 100)}</span>` : ""}
+            <div class="img_product">
+              <img src="${product.images[0]}" alt="${product.name}" />
+            </div>
+            <div class="stars">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="name_product"><a href="product-details.html?id=${product.id}">${product.name}</a></p>
+
+            <div class="price">
+              <p><span>$${product.price}</span></p>
+              ${product.old_price ? `<p class="old_price">$${product.old_price}</p>` : ""}
+            </div>
+            <div class="icons">
+              <span class="btn_add_cart">
+                <i class="fa-solid fa-cart-shopping"></i> add to cart
+              </span>
+              <span class="icon_product">
+                <i class="fa-regular fa-heart"></i>
+              </span>
+            </div>
+          `;
+
+          container.appendChild(item);
+        }
+      });
+
+      setupFavoriteButtons();
+      setupCartButtons();
+      updateFavouriteCounter();
+      updateCartCount();
+    });
+</script>
+
+
+<script src="Js.js" defer></script>
+
+</body>
+</html>

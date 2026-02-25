@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopin | Checkout</title>
+  <link rel="icon" href="img/icons8-bag-50.png">
+  <link rel="stylesheet" href="Style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--bg_color);
+      margin: 0;
+      padding-top: 180px;
+    }
+
+    #checkoutPage {
+      max-width: 600px;
+      margin: 40px auto;
+      background: var(--white_color);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--color_heading);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    #checkoutItems {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid var(--border_color);
+      border-radius: 5px;
+      min-height: 100px;
+    }
+
+    #checkoutSummary p {
+      font-size: 16px;
+      margin: 10px 0;
+      color: var(--p_color);
+    }
+
+    #checkoutSummary span {
+      font-weight: bold;
+      color: var(--main_color);
+    }
+
+    #placeOrder {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: var(--main_color);
+      color: var(--white_color);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #placeOrder:hover {
+      background-color: #e65c00;
+    }
+
+    .qty-increase,
+    .qty-decrease {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      color: #333;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .qty-increase:hover,
+    .qty-decrease:hover {
+      background-color: #f0f0f0;
+    }
+
+    .remove-item {
+      background: transparent !important;
+      border: none;
+      padding: 20px;
+      margin-top: 17px;
+      margin-left: 10px;
+      border-radius: 4px;
+      font-size: 18px;
+      cursor: pointer;
+      color: #888;
+      transition: color 0.2s ease;
+    }
+
+    .remove-item:hover {
+      color: red;
+      background-color: transparent;
+    }
+     .checkout-item p {
+  margin: 6px 0;
+}
+
+.checkout-item {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="top-header">
+      <div class="container">
+        <a href="#" class="logo"><img src="img/Shop In (1).png" width="200px"></a>
+
+      </div>
+    </div>
+
+    <div class="bottom_header">
+      <div class="container">
+        <nav class="nav">
+          <ul class="nav_links">
+            <li class="active"><a href="index.html">Home</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+
+<div id="checkoutPage">
+  <h1>Payment Details</h1>
+
+  <div id="checkoutItems"></div>
+
+  <div id="checkoutSummary">
+    <p>Total: <span id="totalAmount">$0</span></p>
+    <p>Discount: <span id="discountAmount">$0</span></p>
+    <p>Final Total: <span id="finalAmount">$0</span></p>
+  </div>
+
+  <button id="placeOrder">Place Order</button>
+</div>
+
+<div id="paymentModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Enter Payment Details</h2>
+    <form id="paymentForm">
+      <input type="text" placeholder="Card Holder Name">
+      <input type="text" placeholder="Card Number">
+      <input type="text" placeholder="MM/YY">
+      <input type="text" placeholder="CVV">
+      <button type="submit" class="btn">Confirm Payment</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  loadCheckout();
+
+  function loadCheckout() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const checkoutItems = document.getElementById("checkoutItems");
+    checkoutItems.innerHTML = '';
+
+    let total = 0;
+    let discount = 0;
+
+    if (cart.length === 0) {
+      checkoutItems.innerHTML = `<p style="text-align: center; color: gray;">🛒 Your cart is empty</p>`;
+      document.getElementById("totalAmount").textContent = "$0.00";
+      document.getElementById("discountAmount").textContent = "$0.00";
+      document.getElementById("finalAmount").textContent = "$0.00";
+      return;
+    }
+
+    cart.forEach((item, index) => {
+      if (!item.quantity) item.quantity = 1;
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "checkout-item";
+      itemDiv.innerHTML = `
+        <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+          <img src="${item.img}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
+          <div style="flex-grow: 1;">
+            <p style="font-weight: bold;">${item.name}</p>
+            <p>Price: $${item.price}</p>
+            <p>
+
+              Quantity:
+              <button class="qty-decrease" data-index="${index}"><i class="fa-solid fa-minus"></i></button>
+              <span class="item-qty" style="margin: 0 8px;">${item.quantity}</span>
+              <button class="qty-increase" data-index="${index}"><i class="fa-solid fa-plus"></i></button>
+              
+            </p>
+            <p class="item-total" style="margin-top: 5px;">Total: $${(item.price * item.quantity).toFixed(2)}</p>
+          </div>
+          <button class="remove-item" data-index="${index}" title="Remove">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `;
+      checkoutItems.appendChild(itemDiv);
+      total += item.price * item.quantity;
+    });
+
+    if (total > 50) discount = total * 0.10;
+
+    document.getElementById("totalAmount").textContent = `$${total.toFixed(2)}`;
+    document.getElementById("discountAmount").textContent = `$${discount.toFixed(2)}`;
+    document.getElementById("finalAmount").textContent = `$${(total - discount).toFixed(2)}`;
+
+    document.querySelectorAll(".qty-increase").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = parseInt(btn.getAttribute("data-index"));
+        cart[i].quantity += 1;
+        localStorage.setItem("cart", JSON.stringify(cart));
+        loadCheckout();
+      });
+    });
+
+    document.querySelectorAll(".qty-decrease").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = parseInt(btn.getAttribute("data-index"));
+        if (cart[i].quantity > 1) {
+          cart[i].quantity -= 1;
+          localStorage.setItem("cart", JSON.stringify(cart));
+          loadCheckout();
+        }
+      });
+    });
+
+    document.querySelectorAll(".remove-item").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = parseInt(btn.getAttribute("data-index"));
+        cart.splice(i, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        loadCheckout();
+      });
+    });
+
+    document.getElementById("placeOrder").onclick = () => {
+      document.getElementById("paymentModal").style.display = "flex";
+    };
+  }
+
+  document.querySelector(".close").onclick = () => {
+    document.getElementById("paymentModal").style.display = "none";
+  };
+
+  document.getElementById("paymentForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    localStorage.removeItem("cart");
+    document.querySelector("#paymentModal .modal-content").innerHTML = `
+      <h2 style="color: green;">✔️ Payment Successful</h2>
+      <p>Thank you for your order!</p>
+    `;
+    setTimeout(() => {
+      document.getElementById("paymentModal").style.display = "none";
+      loadCheckout();
+    }, 2000);
+  });
+</script>
+<script src="Js.js" defer></script>
+</body>
+</html>

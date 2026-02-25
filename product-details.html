@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopin | Product </title>
+  <link rel="icon" href="img/icons8-bag-50.png">
+  <link rel="stylesheet" href="Style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    .top-bar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+    }
+    .top-bar button {
+      background-color: #ff8716;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .product-page {
+      display: grid;
+      grid-template-columns: 80px 350px 1fr;
+      gap: 15px;
+      padding: 30px;
+      align-items: start;
+    }
+    .image-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .image-gallery img {
+      width: 60px;
+      height: 60px;
+      border-radius: 5px;
+      cursor: pointer;
+      object-fit: cover;
+      border: 1px solid #ccc;
+    }
+    .main-image {
+      width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .product-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .product-info h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .product-info p {
+      margin: 6px 0;
+    }
+    .price {
+      font-size: 24px;
+      color: #ff8716;
+      font-weight: bold;
+    }
+    .old-price {
+      text-decoration: line-through;
+      color: gray;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+    .sizes span {
+      display: inline-block;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      margin: 5px 5px 0 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .sizes span.active {
+      background: #ff8716;
+      color: white;
+      border-color: #ff8716;
+    }
+    .rating i {
+      font-size: 20px;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .rating i.active {
+      color: gold;
+    }
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    .buttons button {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+    .btn-cart {
+      background: #000;
+      color: white;
+    }
+    .btn-cart:hover {
+      opacity: 0.9;
+    }
+    .btn-fav {
+      background: #ff8716;
+      color: white;
+    }
+    .btn-fav.active {
+      background: #e65c00;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <button onclick="history.back()">← Back </button>
+  </div>
+
+  <div class="product-page" id="productDetail">
+    <p>Loading...</p>
+  </div>
+
+<script>
+  let favourites = JSON.parse(localStorage.getItem('favourites')) || [];
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  function saveFavourites() {
+    localStorage.setItem('favourites', JSON.stringify(favourites));
+  }
+
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = parseInt(urlParams.get('id'));
+
+  fetch('products_with_multiple_images.json')
+    .then(res => res.json())
+    .then(data => {
+      const product = data.find(p => p.id === productId);
+      if (!product) return;
+
+      const thumbnails = product.images.map(img => `<img src="${img}" onclick="document.getElementById('mainImage').src='${img}'">`).join('');
+
+      const mainImage = product.images[0];
+
+      document.getElementById('productDetail').innerHTML = `
+        <div class="image-gallery">
+          ${thumbnails}
+        </div>
+        <div>
+          <img id="mainImage" src="${mainImage}" class="main-image">
+        </div>
+        <div class="product-info">
+          <h1>${product.name}</h1>
+          <p><span class="price">$${product.price}</span>${product.old_price ? `<span class='old-price'>$${product.old_price}</span>` : ''}</p>
+          <p><strong>Category:</strong> ${product.category}</p>
+          <p><strong>Size:</strong></p>
+          <div class="sizes">
+            <span>XS</span><span>S</span><span>M</span><span>L</span><span>XL</span>
+          </div>
+          <p><strong>Rating:</strong></p>
+          <div class="rating">
+            <i class="fa-star fa-regular"></i>
+            <i class="fa-star fa-regular"></i>
+            <i class="fa-star fa-regular"></i>
+            <i class="fa-star fa-regular"></i>
+            <i class="fa-star fa-regular"></i>
+          </div>
+          <div class="buttons">
+            <button class="btn-cart">🛒 Add to Cart</button>
+            <button class="btn-fav"><i class="fa-regular fa-heart"></i> Favorite</button>
+          </div>
+        </div>
+      `;
+
+      const favBtn = document.querySelector('.btn-fav');
+      const cartBtn = document.querySelector('.btn-cart');
+
+      if (favourites.some(item => item.id === productId)) {
+        favBtn.classList.add("active");
+        favBtn.querySelector("i").classList.remove("fa-regular");
+        favBtn.querySelector("i").classList.add("fa-solid");
+      }
+
+      favBtn.addEventListener('click', () => {
+        const i = favourites.findIndex(item => item.id === productId);
+        if (i !== -1) {
+          favourites.splice(i, 1);
+          favBtn.classList.remove("active");
+          favBtn.querySelector("i").classList.remove("fa-solid");
+          favBtn.querySelector("i").classList.add("fa-regular");
+        } else {
+          favourites.push({ id: product.id, name: product.name, img: product.images[0] });
+          favBtn.classList.add("active");
+          favBtn.querySelector("i").classList.remove("fa-regular");
+          favBtn.querySelector("i").classList.add("fa-solid");
+        }
+        saveFavourites();
+      });
+
+      cartBtn.addEventListener('click', () => {
+        if (!cart.some(item => item.id === productId)) {
+          cart.push({ id: product.id, name: product.name, img: product.images[0], price: product.price });
+          saveCart();
+          alert("✔️ Product has been added to the cart");
+} else {
+  alert("🔄 Product is already in the cart");
+
+        }
+      });
+
+      // size
+      document.querySelectorAll('.sizes span').forEach(span => {
+        span.addEventListener('click', () => {
+          document.querySelectorAll('.sizes span').forEach(s => s.classList.remove('active'));
+          span.classList.add('active');
+        });
+      });
+
+      // Stars
+      const stars = document.querySelectorAll('.rating i');
+      stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+          stars.forEach((s, i) => {
+            s.classList.toggle('active', i <= index);
+            s.classList.remove('fa-regular');
+            s.classList.add('fa-solid');
+          });
+        });
+      });
+    });
+</script>
+
+</body>
+</html>

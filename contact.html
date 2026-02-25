@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopin | Contact</title>
+  <link rel="icon" href="img/icons8-bag-50.png">
+  <link rel="stylesheet" href="Style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <style>
+    /* Message Box Style */
+    .message-box {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="top-header">
+      <div class="container">
+        <a href="#" class="logo"><img src="img/Shop In (1).png" width="200px"></a>
+
+        <div class="header-icons">
+          <div class="icon">
+            <a href="#"><i class="fa-solid fa-heart"></i><span class="count count_favourits">0</span></a>
+          </div>
+
+          <div class="icon">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="count item_header">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom_header">
+      <div class="container">
+        <nav class="nav">
+          <ul class="nav_links">
+            <li class="active"><a href="index.html">Home</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contact Section -->
+  <section class="page-section">
+    <div class="container">
+      <h2 class="section-title">Contact Us</h2>
+      <form id="contactForm" class="contact-form">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" required></textarea>
+        <button type="submit" class="btn">Send Message</button>
+      </form>
+
+      <!--  Message Box -->
+      <div id="messageBox" class="message-box">Your message has been sent successfully!</div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="big_row">
+        <img class="logo_footer" src="img/Shop In (1).png" alt="">
+        <p>Stylish, elegant, and affordable, clothing for every occasion.</p>
+        <div class="icons_footer">
+          <a href="#"><i class="fa-solid fa-phone"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+
+      <div class="row">
+        <h4>Service us</h4>
+        <div class="links">
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Contact Us </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Return Policy </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Shipping Info</a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Terms & Condition</a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Privacy Policy </a>
+        </div>
+      </div>
+
+      <div class="row">
+        <h4>Quick Links</h4>
+        <div class="links">
+          <a href="#"><i class="fa-solid fa-caret-right"></i> New Arrivals </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Best Sellers </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Offers </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Size Guide </a>
+          <a href="#"><i class="fa-solid fa-caret-right"></i> Track Order </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom_footer">
+      <div class="container">
+        <p>&copy; <span>Shopin.</span> All Rights Reserved.</p>
+        <div class="payment_img">
+          <img src="img/payment_method.png" alt="">
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!--  JavaScript for message -->
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('messageBox').style.display = 'block';
+      this.reset();
+
+      // Hide after 4 seconds
+      setTimeout(() => {
+        document.getElementById('messageBox').style.display = 'none';
+      }, 4000);
+    });
+  </script>
+
+</body>
+</html>
